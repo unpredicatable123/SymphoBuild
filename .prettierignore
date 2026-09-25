@@ -1,0 +1,14 @@
+# Package Managers
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bun.lock
+bun.lockb
+
+# Generated / binary
+/static/demo/
+/studio/dist/
+/studio/.sanity/
+/studio/node_modules/
+/studio/seed/seed.ndjson
+/studio/package-lock.json

@@ -1,0 +1,475 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/* `js:` variant — styles that only apply once JavaScript has booted (progressive enhancement) */
+@custom-variant js (&:where(.js *));
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Sympho Build — design tokens
+   "Drawing to building": an architecture-journal palette of ink, limestone,
+   copper redline and sage. Every token below is available as a Tailwind
+   utility (e.g. bg-ink-900, text-copper-600, font-display, ease-out-expo).
+   ─────────────────────────────────────────────────────────────────────────── */
+@theme {
+	/* Colour — ink (charcoal) */
+	--color-ink-950: #0e1011;
+	--color-ink-900: #16181a;
+	--color-ink-800: #1f2225;
+	--color-ink-700: #2c3034;
+	--color-ink-600: #43484d;
+	--color-ink-500: #5d6267; /* ≥ 5:1 on limestone — use for secondary text */
+	--color-ink-400: #868b90;
+	--color-ink-300: #aeb2b5;
+
+	/* Colour — limestone (warm ivory) */
+	--color-limestone-50: #fbf9f4;
+	--color-limestone-100: #f4efe6;
+	--color-limestone-200: #ebe3d5;
+	--color-limestone-300: #ddd2bf;
+	--color-limestone-400: #c7b89f;
+	--color-limestone-500: #a8977b;
+
+	/* Colour — copper (terracotta redline accent) */
+	--color-copper-200: #f0cdb9;
+	--color-copper-300: #e0a282;
+	--color-copper-400: #d0845f; /* accent text on ink (6:1) */
+	--color-copper-500: #bd6a45;
+	--color-copper-600: #a2522f; /* accent text on limestone (4.8:1) */
+	--color-copper-700: #7f3e22;
+
+	/* Colour — sage / olive details */
+	--color-sage-200: #d5dbc8;
+	--color-sage-300: #b9c2a6;
+	--color-sage-400: #9aa585;
+	--color-sage-500: #7b8766;
+	--color-sage-600: #5e6a4b;
+	--color-sage-700: #46503a;
+
+	/* Semantic */
+	--color-success: #4f6b3f;
+	--color-danger: #a33a2c;
+	--color-warning: #9a6a17;
+
+	/* Typography */
+	--font-display: 'Newsreader Variable', 'Newsreader', ui-serif, Georgia, 'Times New Roman', serif;
+	--font-sans:
+		'Manrope Variable', 'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+	--font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+	/* Fluid type scale (320px → 1600px) */
+	--text-display-2xl: clamp(3.1rem, 1.9rem + 6.4vw, 8.75rem);
+	--text-display-2xl--line-height: 0.92;
+	--text-display-2xl--letter-spacing: -0.035em;
+	--text-display-xl: clamp(2.6rem, 1.7rem + 4.4vw, 6.25rem);
+	--text-display-xl--line-height: 0.96;
+	--text-display-xl--letter-spacing: -0.03em;
+	--text-display-lg: clamp(2.15rem, 1.6rem + 2.7vw, 4.5rem);
+	--text-display-lg--line-height: 1.02;
+	--text-display-lg--letter-spacing: -0.025em;
+	--text-display-md: clamp(1.75rem, 1.45rem + 1.5vw, 3rem);
+	--text-display-md--line-height: 1.08;
+	--text-display-md--letter-spacing: -0.02em;
+	--text-display-sm: clamp(1.4rem, 1.25rem + 0.75vw, 2rem);
+	--text-display-sm--line-height: 1.15;
+	--text-display-sm--letter-spacing: -0.012em;
+	--text-lede: clamp(1.1rem, 1.02rem + 0.4vw, 1.375rem);
+	--text-lede--line-height: 1.55;
+	--text-label: 0.72rem;
+	--text-label--line-height: 1.3;
+	--text-label--letter-spacing: 0.14em;
+
+	/* Spacing */
+	--spacing-gutter: clamp(1rem, 0.6rem + 2vw, 2.5rem);
+	--spacing-section: clamp(5rem, 3.5rem + 7vw, 10rem);
+	--spacing-section-sm: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+	--spacing-header: 4.5rem;
+
+	/* Radius — architectural: mostly crisp, softened only at touch targets */
+	--radius-xs: 2px;
+	--radius-sm: 4px;
+	--radius-md: 8px;
+	--radius-lg: 14px;
+	--radius-xl: 22px;
+	--radius-pill: 999px;
+
+	/* Shadows — layered, warm-tinted */
+	--shadow-hairline: 0 0 0 1px rgb(22 24 26 / 0.08);
+	--shadow-plate: 0 1px 0 rgb(22 24 26 / 0.04), 0 22px 44px -28px rgb(22 24 26 / 0.45);
+	--shadow-lift: 0 2px 0 rgb(22 24 26 / 0.04), 0 36px 70px -36px rgb(22 24 26 / 0.55);
+	--shadow-glow: 0 0 0 1px rgb(208 132 95 / 0.35), 0 18px 50px -20px rgb(189 106 69 / 0.55);
+
+	/* Motion */
+	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+	--ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+	--ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+	--ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+	--duration-fast: 180ms;
+	--duration-base: 320ms;
+	--duration-slow: 640ms;
+	--duration-cinematic: 1100ms;
+
+	--animate-draw: draw 2.4s var(--ease-out-quart) both;
+	--animate-rise: rise 0.9s var(--ease-out-expo) both;
+	--animate-marquee: marquee 48s linear infinite;
+
+	@keyframes draw {
+		from {
+			stroke-dashoffset: 1;
+		}
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+	@keyframes rise {
+		from {
+			opacity: 0;
+			transform: translate3d(0, 1.25rem, 0);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+	@keyframes marquee {
+		to {
+			transform: translate3d(-50%, 0, 0);
+		}
+	}
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+@layer base {
+	:root {
+		color-scheme: light;
+		--paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .09 0 0 0 0 .09 0 0 0 0 .1 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+	}
+
+	html {
+		-webkit-text-size-adjust: 100%;
+		text-rendering: optimizeLegibility;
+		scroll-padding-top: calc(var(--spacing-header) + 1.5rem);
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		html {
+			scroll-behavior: smooth;
+		}
+	}
+
+	body {
+		@apply bg-limestone-100 font-sans text-ink-900 antialiased;
+		background-image: var(--paper-grain);
+		font-feature-settings: 'ss01', 'cv11';
+		min-height: 100svh;
+		overflow-x: clip;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4 {
+		@apply font-display;
+		font-optical-sizing: auto;
+		text-wrap: balance;
+	}
+
+	p {
+		text-wrap: pretty;
+	}
+
+	::selection {
+		@apply bg-copper-500 text-limestone-50;
+	}
+
+	:focus-visible {
+		outline: 2px solid var(--color-copper-500);
+		outline-offset: 3px;
+		border-radius: var(--radius-xs);
+	}
+
+	.on-dark :focus-visible,
+	.on-dark:focus-visible {
+		outline-color: var(--color-copper-300);
+	}
+
+	[hidden] {
+		display: none !important;
+	}
+
+	/* Native <dialog> backdrop */
+	dialog::backdrop {
+		background: rgb(14 16 17 / 0.72);
+		backdrop-filter: blur(6px);
+	}
+}
+
+/* ─── Components (low-level primitives used by Svelte components) ─────────── */
+@layer components {
+	.container-page {
+		@apply mx-auto w-full max-w-[96rem] px-gutter;
+	}
+
+	/* Drawing-sheet label, e.g. "SB—03 · Services" */
+	.sheet-label {
+		@apply inline-flex items-center gap-3 font-mono text-label text-ink-500 uppercase;
+	}
+	.sheet-label::before {
+		content: '';
+		@apply inline-block h-px w-8 bg-current opacity-60;
+	}
+	.on-dark .sheet-label {
+		@apply text-limestone-300;
+	}
+
+	/* Hairline rules */
+	.rule {
+		@apply h-px w-full bg-ink-900/12;
+	}
+	.on-dark .rule {
+		@apply bg-limestone-100/14;
+	}
+
+	/* Blueprint grid for dark surfaces */
+	.blueprint-grid {
+		background-image:
+			linear-gradient(rgb(244 239 230 / 0.045) 1px, transparent 1px),
+			linear-gradient(90deg, rgb(244 239 230 / 0.045) 1px, transparent 1px);
+		background-size: 72px 72px;
+		background-position: -1px -1px;
+	}
+
+	/* Corner registration ticks — the recurring "drawing sheet" motif */
+	.sheet-frame {
+		position: relative;
+		--tick: 14px;
+		--tick-color: currentColor;
+	}
+	.sheet-frame::before,
+	.sheet-frame::after {
+		content: '';
+		position: absolute;
+		width: var(--tick);
+		height: var(--tick);
+		pointer-events: none;
+		opacity: 0.55;
+	}
+	.sheet-frame::before {
+		top: -1px;
+		left: -1px;
+		border-top: 1px solid var(--tick-color);
+		border-left: 1px solid var(--tick-color);
+	}
+	.sheet-frame::after {
+		right: -1px;
+		bottom: -1px;
+		border-right: 1px solid var(--tick-color);
+		border-bottom: 1px solid var(--tick-color);
+	}
+
+	/* Dimension-line underline for text links */
+	.link-dim {
+		background-image: linear-gradient(currentColor, currentColor);
+		background-size: 0% 1px;
+		background-position: 0 100%;
+		background-repeat: no-repeat;
+		transition: background-size var(--duration-base) var(--ease-out-expo);
+		padding-bottom: 2px;
+	}
+	.link-dim:hover,
+	.link-dim:focus-visible {
+		background-size: 100% 1px;
+	}
+
+	/* Prose — long-form articles & rich text */
+	.prose-sympho {
+		@apply prose max-w-none prose-neutral;
+		--tw-prose-body: var(--color-ink-700);
+		--tw-prose-headings: var(--color-ink-900);
+		--tw-prose-links: var(--color-copper-600);
+		--tw-prose-bold: var(--color-ink-900);
+		--tw-prose-quotes: var(--color-ink-900);
+		--tw-prose-quote-borders: var(--color-copper-500);
+		--tw-prose-bullets: var(--color-copper-500);
+		--tw-prose-counters: var(--color-copper-600);
+		--tw-prose-hr: rgb(22 24 26 / 0.12);
+		font-size: 1.075rem;
+		line-height: 1.75;
+	}
+	.prose-sympho :where(h2, h3, h4) {
+		@apply font-display font-normal tracking-tight;
+	}
+	.prose-sympho :where(h2) {
+		font-size: clamp(1.6rem, 1.3rem + 1vw, 2.2rem);
+	}
+	.prose-sympho :where(blockquote) {
+		@apply font-display text-2xl font-normal italic;
+	}
+	.on-dark .prose-sympho {
+		--tw-prose-body: var(--color-limestone-200);
+		--tw-prose-headings: var(--color-limestone-50);
+		--tw-prose-links: var(--color-copper-300);
+		--tw-prose-bold: var(--color-limestone-50);
+	}
+
+	/* Form field primitives */
+	.field-label {
+		@apply mb-2 block text-sm font-semibold text-ink-800;
+	}
+	.field-input {
+		@apply block w-full rounded-sm border border-ink-900/20 bg-limestone-50 px-4 py-3 text-base text-ink-900 transition-[border-color,box-shadow] duration-200 placeholder:text-ink-400;
+		min-height: 3rem;
+	}
+	.field-input:hover {
+		@apply border-ink-900/40;
+	}
+	.field-input:focus {
+		@apply border-copper-500 outline-none;
+		box-shadow: 0 0 0 3px rgb(189 106 69 / 0.22);
+	}
+	.field-input[aria-invalid='true'] {
+		@apply border-danger;
+	}
+	select.field-input {
+		appearance: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%2316181a' stroke-width='1.5'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+		background-repeat: no-repeat;
+		background-position: right 1rem center;
+		padding-right: 2.5rem;
+	}
+	.field-hint {
+		@apply mt-1.5 text-sm text-ink-500;
+	}
+	.field-error {
+		@apply mt-1.5 flex items-center gap-1.5 text-sm font-medium text-danger;
+	}
+}
+
+/* ─── Motion system ──────────────────────────────────────────────────────── */
+/* Reveal: content is visible by default (no-JS / reduced motion). Only when JS
+   has booted and motion is allowed do we stage it for reveal. */
+@media (prefers-reduced-motion: no-preference) {
+	.js [data-reveal]:not([data-revealed]) {
+		opacity: 0;
+		transform: translate3d(0, var(--reveal-y, 1.75rem), 0);
+	}
+	.js [data-reveal] {
+		transition:
+			opacity var(--duration-slow) var(--ease-out-expo),
+			transform var(--duration-cinematic) var(--ease-out-expo);
+		transition-delay: var(--reveal-delay, 0ms);
+	}
+
+	/* Mask reveal for media: image wipes up from a hairline. The clip is applied to the
+	   children so the observed element itself stays unclipped (IntersectionObserver
+	   treats a fully clipped target as not intersecting). */
+	.js [data-reveal='mask']:not([data-revealed]) {
+		opacity: 1;
+		transform: none;
+	}
+	.js [data-reveal='mask']:not([data-revealed]) > * {
+		clip-path: inset(100% 0 0 0);
+	}
+	.js [data-reveal='mask'] > * {
+		clip-path: inset(0 0 0 0);
+		transition: clip-path 1.25s var(--ease-in-out-quint);
+		transition-delay: var(--reveal-delay, 0ms);
+	}
+
+	/* Word-by-word heading reveal */
+	.js [data-split]:not([data-revealed]) .split-word > span {
+		transform: translate3d(0, 105%, 0);
+	}
+	.js [data-split] .split-word > span {
+		transition: transform 1s var(--ease-out-expo);
+		transition-delay: calc(var(--i, 0) * 45ms + var(--reveal-delay, 0ms));
+	}
+
+	/* Line drawing (SVG paths with pathLength="1") */
+	.js [data-draw]:not([data-revealed]) .draw-path {
+		stroke-dashoffset: 1;
+	}
+	.js [data-draw] .draw-path {
+		stroke-dasharray: 1;
+		stroke-dashoffset: 0;
+		transition: stroke-dashoffset 1.8s var(--ease-out-quart);
+		transition-delay: calc(var(--i, 0) * 90ms);
+	}
+
+	/* Lucide icons draw themselves on reveal */
+	.js .icon-draw:not([data-revealed]) svg :is(path, line, polyline, circle, rect) {
+		stroke-dashoffset: 80;
+	}
+	.js .icon-draw svg :is(path, line, polyline, circle, rect) {
+		stroke-dasharray: 80;
+		stroke-dashoffset: 0;
+		transition: stroke-dashoffset 2s var(--ease-out-quart) 200ms;
+	}
+}
+
+.split-word {
+	display: inline-block;
+	overflow: hidden;
+	vertical-align: top;
+	/* room for serif ascenders/descenders and italic overhang inside the mask */
+	padding: 0.12em 0.06em 0.1em;
+	margin: -0.12em -0.06em -0.1em;
+}
+.split-word > span {
+	display: inline-block;
+}
+
+/* ─── Page transitions (View Transitions API) ────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+	::view-transition-old(root) {
+		animation: 420ms var(--ease-in-out-quint) both vt-out;
+	}
+	::view-transition-new(root) {
+		animation: 720ms var(--ease-out-expo) 120ms both vt-in;
+	}
+	::view-transition-old(site-header),
+	::view-transition-new(site-header) {
+		animation: none;
+	}
+}
+@keyframes vt-out {
+	to {
+		opacity: 0;
+		transform: translate3d(0, -1.5rem, 0);
+		filter: blur(2px);
+	}
+}
+@keyframes vt-in {
+	from {
+		opacity: 0;
+		clip-path: inset(6% 0 0 0);
+		transform: translate3d(0, 2.5rem, 0);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+/* Global keyframes referenced by component styles */
+@keyframes rise {
+	from {
+		opacity: 0;
+		transform: translate3d(0, 1.25rem, 0);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+@keyframes draw {
+	to {
+		stroke-dashoffset: 0;
+	}
+}

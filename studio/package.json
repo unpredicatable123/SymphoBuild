@@ -1,0 +1,32 @@
+{
+	"name": "sympho-build-studio",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"main": "package.json",
+	"scripts": {
+		"dev": "sanity dev",
+		"start": "sanity start",
+		"build": "sanity build",
+		"deploy": "sanity deploy",
+		"typecheck": "tsc --noEmit",
+		"seed": "node seed/build-seed.ts && sanity dataset import seed/seed.ndjson production --replace",
+		"seed:build": "node seed/build-seed.ts"
+	},
+	"engines": {
+		"node": ">=22.12"
+	},
+	"dependencies": {
+		"@sanity/icons": "^5.2.2",
+		"@sanity/vision": "^6.16.0",
+		"react": "^19.3.0",
+		"react-dom": "^19.3.0",
+		"sanity": "^6.16.0",
+		"styled-components": "^6.5.3"
+	},
+	"devDependencies": {
+		"@types/node": "^24.13.6",
+		"@types/react": "^19.3.0",
+		"typescript": "^6.0.3"
+	}
+}
