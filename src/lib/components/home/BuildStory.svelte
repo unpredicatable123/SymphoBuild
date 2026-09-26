@@ -29,6 +29,7 @@
 	let canvas: HTMLCanvasElement | undefined = $state();
 	let stepEls: HTMLElement[] = $state([]);
 	let sceneReady = $state(false);
+	let posterGone = $state(false);
 	let active = $state(-1);
 	let heroProgress = $state(0);
 
@@ -50,6 +51,7 @@
 		let scene: Scene | undefined;
 		let disposed = false;
 		let raf = 0;
+		let posterTimer: ReturnType<typeof setTimeout> | undefined;
 
 		const measure = () => {
 			raf = 0;
@@ -102,7 +104,7 @@
 
 		const init = async () => {
 			if (!canUseScene || disposed) return;
-			const { TowerScene, supportsWebGL } = await import('$lib/three/tower-scene');
+			const { TowerScene, supportsWebGL, isIntegratedGPU } = await import('$lib/three/tower-scene');
 			if (disposed || !supportsWebGL() || !canvas) return;
 			const nav = navigator as Navigator & { deviceMemory?: number };
 			const weak =
@@ -111,7 +113,7 @@
 				(nav.deviceMemory ?? 8) <= 4;
 			try {
 				scene = new TowerScene(canvas, {
-					quality: weak ? 'low' : 'high',
+					quality: weak ? 'low' : isIntegratedGPU() ? 'medium' : 'high',
 					reducedMotion: prefersReducedMotion(),
 					layout: window.innerWidth >= 1024 ? 'split' : 'center',
 					onError: () => (sceneReady = false)
@@ -126,6 +128,7 @@
 				window.addEventListener('pointermove', onPointer, { passive: true });
 				measure();
 				requestAnimationFrame(() => (sceneReady = true));
+				posterTimer = setTimeout(() => (posterGone = true), 1800);
 			} catch {
 				sceneReady = false;
 			}
@@ -143,6 +146,7 @@
 		return () => {
 			disposed = true;
 			cancelAnimationFrame(raf);
+			clearTimeout(posterTimer);
 			io.disconnect();
 			ro.disconnect();
 			window.removeEventListener('scroll', schedule);
@@ -158,85 +162,95 @@
 	class="on-dark relative bg-ink-900 text-limestone-50"
 	aria-label="Introduction and construction process"
 >
-	<!-- Sticky stage: 3D scene / blueprint poster, with HUD overlays -->
-	<div class="sticky top-0 -mb-[100svh] h-svh overflow-hidden" aria-hidden="true">
-		{#if mode === 'image' && hero?.image}
-			<Img
-				image={hero.image}
-				priority
-				sizes="100vw"
-				class="absolute inset-0 h-full w-full opacity-70"
-			/>
-		{:else if mode === 'video' && hero?.videoUrl}
-			<video
-				class="absolute inset-0 h-full w-full object-cover opacity-60"
-				src={hero.videoUrl}
-				autoplay
-				muted
-				loop
-				playsinline
-				preload="metadata"
-			></video>
-		{:else}
-			<div class="blueprint-grid absolute inset-0"></div>
-			<div
-				class={cx(
-					'absolute inset-0 flex items-start justify-center pt-[14svh] text-copper-400 transition-opacity duration-1000 lg:items-center lg:justify-end lg:pt-0 lg:pr-[6vw]',
-					sceneReady && 'opacity-0'
-				)}
-			>
-				<BlueprintDrawing class="w-[min(92vw,34rem)] lg:w-[min(46vw,44rem)]" />
-			</div>
-			<canvas
-				bind:this={canvas}
-				class={cx(
-					'absolute inset-0 h-full w-full transition-opacity duration-[1600ms] ease-out',
-					sceneReady ? 'opacity-100' : 'opacity-0'
-				)}
-			></canvas>
-		{/if}
-		<!-- legibility gradients -->
-		<div
-			class="absolute inset-0 bg-linear-to-t from-ink-900 via-ink-900/35 to-transparent lg:bg-linear-to-r lg:from-ink-900/90 lg:via-ink-900/30"
-		></div>
-		<div class="absolute inset-x-0 top-0 h-40 bg-linear-to-b from-ink-900/80 to-transparent"></div>
-
-		<!-- HUD: drawing-sheet title block -->
-		<div
-			class="absolute top-[calc(var(--spacing-header)+1.25rem)] right-gutter hidden text-right font-mono text-label text-limestone-300 uppercase md:block"
-		>
-			<p>Drawing SB—01 · Scale 1:500</p>
-			{#if hero?.coordinatesLabel}<p class="mt-1 text-limestone-400">
-					{hero.coordinatesLabel}
-				</p>{/if}
-		</div>
-
-		<!-- Stage rail (desktop) -->
-		{#if steps.length}
-			<ol class="absolute top-1/2 right-gutter hidden -translate-y-1/2 flex-col gap-3 xl:flex">
-				{#each steps as step, i (step._key)}
-					<li
+	<!-- Sticky stage: 3D scene / blueprint poster, with HUD overlays. The absolute track bounds
+	     the sticky element to this section, so the stage ends exactly where the section ends
+	     instead of overhanging (and covering) the next section. -->
+	<div class="pointer-events-none absolute inset-0" aria-hidden="true">
+		<div class="sticky top-0 h-svh overflow-hidden">
+			{#if mode === 'image' && hero?.image}
+				<Img
+					image={hero.image}
+					priority
+					sizes="100vw"
+					class="absolute inset-0 h-full w-full opacity-70"
+				/>
+			{:else if mode === 'video' && hero?.videoUrl}
+				<video
+					class="absolute inset-0 h-full w-full object-cover opacity-60"
+					src={hero.videoUrl}
+					autoplay
+					muted
+					loop
+					playsinline
+					preload="metadata"
+				></video>
+			{:else}
+				<!-- Poster fallback; removed once the 3D scene has faded in so the browser stops
+				     rasterising layers nobody can see (that raster work competes with WebGL). -->
+				{#if !(sceneReady && posterGone)}
+					<div class="blueprint-grid absolute inset-0"></div>
+					<div
 						class={cx(
-							'flex items-center justify-end gap-3 font-mono text-label uppercase transition-colors duration-500',
-							i === active ? 'text-copper-300' : 'text-limestone-100/35'
+							'absolute inset-0 flex items-start justify-center pt-[14svh] text-copper-400 transition-opacity duration-1000 lg:items-center lg:justify-end lg:pt-0 lg:pr-[6vw]',
+							sceneReady && 'opacity-0'
 						)}
 					>
-						<span
+						<BlueprintDrawing class="w-[min(92vw,34rem)] lg:w-[min(46vw,44rem)]" />
+					</div>
+				{/if}
+				<canvas
+					bind:this={canvas}
+					class={cx(
+						'absolute inset-0 h-full w-full transition-opacity duration-[1600ms] ease-out',
+						sceneReady ? 'opacity-100' : 'opacity-0'
+					)}
+				></canvas>
+			{/if}
+			<!-- legibility gradients -->
+			<div
+				class="absolute inset-0 bg-linear-to-t from-ink-900 via-ink-900/35 to-transparent lg:bg-linear-to-r lg:from-ink-900/90 lg:via-ink-900/30"
+			></div>
+			<div
+				class="absolute inset-x-0 top-0 h-40 bg-linear-to-b from-ink-900/80 to-transparent"
+			></div>
+
+			<!-- HUD: drawing-sheet title block -->
+			<div
+				class="absolute top-[calc(var(--spacing-header)+1.25rem)] right-gutter hidden text-right font-mono text-label text-limestone-300 uppercase md:block"
+			>
+				<p>Drawing SB—01 · Scale 1:500</p>
+				{#if hero?.coordinatesLabel}<p class="mt-1 text-limestone-400">
+						{hero.coordinatesLabel}
+					</p>{/if}
+			</div>
+
+			<!-- Stage rail (desktop) -->
+			{#if steps.length}
+				<ol class="absolute top-1/2 right-gutter hidden -translate-y-1/2 flex-col gap-3 xl:flex">
+					{#each steps as step, i (step._key)}
+						<li
 							class={cx(
-								'rounded-xs bg-ink-900/80 px-2 py-1 backdrop-blur-sm transition-opacity duration-500',
-								i === active ? 'opacity-100' : 'opacity-0'
-							)}>{step.title}</span
-						>
-						<span
-							class={cx(
-								'h-px transition-all duration-700 ease-out-expo',
-								i === active ? 'w-10 bg-copper-400' : 'w-4 bg-current'
+								'flex items-center justify-end gap-3 font-mono text-label uppercase transition-colors duration-500',
+								i === active ? 'text-copper-300' : 'text-limestone-100/35'
 							)}
-						></span>
-					</li>
-				{/each}
-			</ol>
-		{/if}
+						>
+							<span
+								class={cx(
+									'rounded-xs bg-ink-900/85 px-2 py-1 transition-opacity duration-500',
+									i === active ? 'opacity-100' : 'opacity-0'
+								)}>{step.title}</span
+							>
+							<span
+								class={cx(
+									'h-px transition-all duration-700 ease-out-expo',
+									i === active ? 'w-10 bg-copper-400' : 'w-4 bg-current'
+								)}
+							></span>
+						</li>
+					{/each}
+				</ol>
+			{/if}
+		</div>
 	</div>
 
 	<div class="relative z-10">
@@ -299,8 +313,9 @@
 							<article
 								class={cx(
 									// Phones/tablets: the card docks above the contact bar while its stage is active,
-									// keeping the top half of the screen clear for the building.
-									'sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom))] w-full max-w-md rounded-md border bg-ink-900/80 p-5 backdrop-blur-md transition-[border-color] duration-700 ease-out-expo sm:p-7 lg:static lg:bg-ink-900/72 lg:p-9',
+									// keeping the top half of the screen clear for the building. Solid tint rather than
+									// backdrop-blur: blurring a live WebGL canvas every frame is what made scrolling stutter.
+									'sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom))] w-full max-w-md rounded-md border bg-ink-900/90 p-5 transition-[border-color] duration-700 ease-out-expo sm:p-7 lg:static lg:bg-ink-900/85 lg:p-9',
 									i === active ? 'border-copper-400/60' : 'border-limestone-100/12'
 								)}
 							>
