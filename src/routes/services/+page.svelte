@@ -30,7 +30,7 @@
 						: ''}"
 					use:tilt={{ max: 2 }}
 				>
-					<div class="overflow-hidden" data-cursor="media" data-cursor-label="Explore">
+					<div class="overflow-hidden">
 						<Img
 							image={s.heroImage}
 							aspect={i === 0 ? 4 / 3 : 16 / 9}

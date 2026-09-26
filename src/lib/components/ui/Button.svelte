@@ -91,7 +91,6 @@
 		{...rest as HTMLAnchorAttributes}
 		class={cls}
 		use:magnetic={{ strength: variant === 'primary' ? 0.25 : 0.15 }}
-		data-cursor="link"
 	>
 		{@render inner()}
 	</a>
@@ -101,7 +100,6 @@
 		class={cls}
 		aria-busy={loading || undefined}
 		use:magnetic={{ strength: variant === 'primary' ? 0.25 : 0.15 }}
-		data-cursor="link"
 	>
 		{@render inner()}
 	</button>

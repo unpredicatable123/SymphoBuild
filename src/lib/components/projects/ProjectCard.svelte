@@ -32,11 +32,7 @@
 </script>
 
 <article class="group relative flex flex-col" use:tilt={{ max: 3 }}>
-	<div
-		class="relative overflow-hidden rounded-md bg-ink-800"
-		data-cursor="media"
-		data-cursor-label="View"
-	>
+	<div class="relative overflow-hidden rounded-md bg-ink-800">
 		<Img
 			image={project.coverImage}
 			aspect={4 / 5}

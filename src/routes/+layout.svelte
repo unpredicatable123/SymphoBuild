@@ -15,7 +15,6 @@
 	import Header from '$lib/components/layout/Header.svelte';
 	import Footer from '$lib/components/layout/Footer.svelte';
 	import ContactActions from '$lib/components/layout/ContactActions.svelte';
-	import Cursor from '$lib/components/layout/Cursor.svelte';
 	import ConsultationDialog from '$lib/components/layout/ConsultationDialog.svelte';
 	import JsonLd from '$lib/components/seo/JsonLd.svelte';
 
@@ -135,7 +134,6 @@
 <Footer footer={data.footer} {settings} />
 <ContactActions {settings} />
 <ConsultationDialog />
-<Cursor />
 <JsonLd data={organization} />
 
 <style>

@@ -69,7 +69,6 @@
 							class="group grid grid-cols-[auto_1fr_auto] items-center gap-5 py-7 sm:gap-8 lg:grid-cols-[4rem_1fr_1fr_auto] lg:py-9"
 							onpointerenter={() => (hovered = i)}
 							onfocus={() => (hovered = i)}
-							data-cursor="link"
 						>
 							<span class="font-mono text-label text-ink-500">{String(i + 1).padStart(2, '0')}</span
 							>

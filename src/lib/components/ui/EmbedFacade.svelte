@@ -62,8 +62,6 @@
 					onclick={() => (active = true)}
 					class="group grid size-20 place-items-center rounded-full bg-limestone-50 text-ink-900 shadow-lift transition-transform duration-500 ease-out-expo hover:scale-105"
 					aria-label="{cta}: {title}"
-					data-cursor="media"
-					data-cursor-label={kind === 'map' ? 'Map' : 'Play'}
 				>
 					<Icon size={26} aria-hidden="true" />
 				</button>

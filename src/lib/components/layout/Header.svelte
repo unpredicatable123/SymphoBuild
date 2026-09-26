@@ -16,22 +16,43 @@
 	let scrolled = $state(false);
 	let hidden = $state(false);
 	let openIndex = $state<number | null>(null);
+	/** Whether the header currently sits over a dark, full-width section (null = not measured yet). */
+	let overDark = $state<boolean | null>(null);
 	let lastY = 0;
+	let raf = 0;
 	let closeTimer: ReturnType<typeof setTimeout> | undefined;
 
 	const tone = $derived((page.data.headerTone as 'dark' | 'light' | undefined) ?? 'light');
-	const onDark = $derived(tone === 'dark' && !scrolled && openIndex === null);
+	// Tone follows whatever is actually under the header, so it stays dark over the hero (and
+	// any other dark band) instead of flashing to the light bar as soon as the page scrolls.
+	const onDark = $derived((overDark ?? tone === 'dark') && openIndex === null);
+
+	function measureTone() {
+		raf = 0;
+		const header = document.querySelector<HTMLElement>('.site-header');
+		const y = (header?.offsetHeight ?? 72) / 2;
+		const under = document
+			.elementsFromPoint(window.innerWidth / 2, y)
+			.find((el) => !header?.contains(el));
+		const dark = under?.closest<HTMLElement>('.on-dark');
+		overDark = !!dark && dark.getBoundingClientRect().width >= window.innerWidth * 0.9;
+	}
+	const scheduleTone = () => {
+		if (!raf) raf = requestAnimationFrame(measureTone);
+	};
 
 	function onscroll() {
 		const y = window.scrollY;
 		scrolled = y > 24;
 		hidden = y > 480 && y > lastY && openIndex === null && !ui.menuOpen;
 		lastY = y;
+		scheduleTone();
 	}
 
 	afterNavigate(() => {
 		openIndex = null;
 		ui.menuOpen = false;
+		scheduleTone();
 	});
 
 	function isActive(href: string) {
@@ -61,7 +82,7 @@
 	}
 </script>
 
-<svelte:window {onscroll} {onkeydown} />
+<svelte:window {onscroll} onresize={scheduleTone} {onkeydown} />
 
 <header
 	class={cx(
@@ -69,7 +90,10 @@
 		hidden && '-translate-y-full',
 		onDark ? 'on-dark text-limestone-50' : 'text-ink-900',
 		(scrolled || openIndex !== null) &&
-			'bg-limestone-100/85 shadow-[0_1px_0_rgb(22_24_26/0.08)] backdrop-blur-xl backdrop-saturate-150'
+			(onDark
+				? // Solid tint, no backdrop blur: blurring the live 3D hero every frame is expensive.
+					'bg-ink-900/92 shadow-[0_1px_0_rgb(244_239_230/0.08)]'
+				: 'bg-limestone-100/85 shadow-[0_1px_0_rgb(22_24_26/0.08)] backdrop-blur-xl backdrop-saturate-150')
 	)}
 	style:view-transition-name="site-header"
 >

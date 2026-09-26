@@ -111,7 +111,6 @@
 			aria-controls="contact-dock-panel"
 			aria-label={open ? 'Close contact options' : 'Contact options'}
 			onclick={() => (open = !open)}
-			data-cursor="link"
 		>
 			<span
 				class="absolute inset-0 animate-ping rounded-full bg-copper-500/30 [animation-duration:2.8s] motion-reduce:hidden"

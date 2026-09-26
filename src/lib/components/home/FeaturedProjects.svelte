@@ -39,8 +39,6 @@
 						use:scrollProgress={{ onProgress: (p) => (shifts[i] = (p - 0.5) * 12) }}
 						tabindex="-1"
 						aria-hidden="true"
-						data-cursor="media"
-						data-cursor-label="Explore"
 					>
 						<div
 							class="scale-[1.12] will-change-transform"

@@ -16,11 +16,7 @@
 		large && 'lg:grid lg:grid-cols-12 lg:items-end lg:gap-10'
 	)}
 >
-	<div
-		class={cx('overflow-hidden rounded-md', large && 'lg:col-span-7')}
-		data-cursor="media"
-		data-cursor-label="Read"
-	>
+	<div class={cx('overflow-hidden rounded-md', large && 'lg:col-span-7')}>
 		<Img
 			image={post.coverImage}
 			aspect={large ? 16 / 10 : 3 / 2}

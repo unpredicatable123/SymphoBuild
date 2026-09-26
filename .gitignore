@@ -27,3 +27,6 @@ vite.config.ts.timestamp-*
 /studio/dist
 /studio/.sanity
 /studio/seed/seed.ndjson
+
+.vercel
+.env*

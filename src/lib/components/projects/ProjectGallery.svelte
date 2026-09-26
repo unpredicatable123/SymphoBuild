@@ -26,8 +26,6 @@
 				class="block h-full w-full"
 				onclick={() => (index = i)}
 				aria-label="Open image {i + 1} of {images.length}: {image.alt}"
-				data-cursor="media"
-				data-cursor-label="View"
 			>
 				<Img
 					{image}

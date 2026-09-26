@@ -104,8 +104,6 @@
 						class="block h-full w-full text-left"
 						onclick={() => (index = i)}
 						aria-label="View {item.title}"
-						data-cursor="media"
-						data-cursor-label="View"
 					>
 						<Img
 							image={item.image}

@@ -42,7 +42,6 @@
 		>
 			<summary
 				class="flex cursor-pointer list-none items-start justify-between gap-6 py-6 text-left [&::-webkit-details-marker]:hidden"
-				data-cursor="link"
 			>
 				<span class="font-display text-display-sm leading-snug font-normal">{item.title}</span>
 				<span
